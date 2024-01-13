@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkshopData</title>
+    <script src="TableToExcel.js"></script>
+</head>
+<body>
+    <div>
+        <button id="show">Show data</button>
+        <table border="1" cellspacing="0" cellpadding="10" id="tablel">
+        </table>
+        <button id="btnExport">Export HTML Table</button>
+    </div>
+    <script src="TableToExcel.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getDatabase, get, ref } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        const firebaseConfig = {
+        apiKey: "AIzaSyBCKeveOtEGbJwwe91LfcW7lKxgqa-v1o4",
+        authDomain: "stjosephsitportal-1ef0e.firebaseapp.com",
+        databaseURL: "https://stjosephsitportal-1ef0e-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "stjosephsitportal-1ef0e",
+        storageBucket: "stjosephsitportal-1ef0e.appspot.com",
+        messagingSenderId: "54812983768",
+        appId: "1:54812983768:web:7d760cbc22c3ec7da4b2ad",
+        measurementId: "G-RHDK7RPB9X"
+      };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        const show = document.querySelector("#show");
+        const sbtnExport = document.querySelector("#btnExport");
+        const table = document.getElementById("tablel");
+
+        function SelecttData() {
+            const dbRef = ref(db,"Workshop");
+            let namel = [];
+            let emaill = [];
+            let schooll = []; // Initialize as an array
+            let m = `<tr>
+            <th>NAME</th>
+            <th>Email</th>
+            <th>School</th>
+        </tr>`;
+            get(dbRef)
+                .then((snapshot) => {
+                    snapshot.forEach(childSnapshot => {
+                        namel.push(childSnapshot.val().Name);
+                        schooll.push(childSnapshot.val().School);
+                        emaill.push(childSnapshot.val().Email);
+                        console.log(childSnapshot.val().Name);
+                        console.log("DFG");
+                    });
+                    console.log(namel);
+                    
+                    
+                    for (let i = 0; i < namel.length; i++) {
+                        m += `<tr><td>${namel[i]}</td><td>${emaill[i]}</td><td>${schooll[i]}</td></tr>`;
+                    }
+                    console.log(m);
+                    table.innerHTML = m;
+                });
+        }
+        function exportReportToExcel() {
+            let table = document.getElementById("tablel");
+            TableToExcel.convert(table, {
+                name: "file.xlsx",
+                sheet: {
+                    name: 'Sheet 1'
+                }
+            });
+        }
+
+        show.addEventListener('click', SelecttData);
+        btnExport.addEventListener('click', exportReportToExcel);
+    </script>
+</body>
+</html>
